@@ -3,7 +3,6 @@ import json, threading, time, math, glob
 from datetime import datetime
 from flask import Flask, jsonify, render_template_string, send_from_directory
 import serial
-import os
 
 BAUD = 115200
 SERIAL_SCAN = ["/dev/ttyACM*", "/dev/ttyUSB*"]
@@ -81,19 +80,9 @@ def payload():
 
 app = Flask(__name__)
 
-ICON_DIR = '/home/kura'
-
 @app.route('/favicon.png')
-def favicon_png():
-    return send_from_directory(ICON_DIR, 'favicon.png', mimetype='image/png')
-
-@app.route('/favicon.ico')
-def favicon_ico():
-    # Serve .ico if present; otherwise fall back to the PNG
-    ico_path = os.path.join(ICON_DIR, 'favicon.ico')
-    if os.path.exists(ico_path):
-        return send_from_directory(ICON_DIR, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-    return send_from_directory(ICON_DIR, 'favicon.png', mimetype='image/png')
+def favicon():
+    return send_from_directory('/home/kura', 'favicon.png', mimetype='image/png')
 
 @app.route("/data")
 def data(): return jsonify(payload())
@@ -109,8 +98,7 @@ TEMPLATE = """
 <title>Dashboard</title>
 
 <!-- Favicon (inline P) -->
-<link rel="icon" type="image/png" href="/favicon.png">
-<link rel="shortcut icon" href="/favicon.ico">
+<link rel="icon" type="image/x-icon" href="/favicon.png">
 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
@@ -121,11 +109,6 @@ TEMPLATE = """
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#e9eef8;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
 .header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--grid)}
 .title{display:flex;gap:12px;align-items:center}
-.icon{
-  width:22px;height:22px;display:inline-block;border-radius:6px;
-  background:url('/favicon.png') center/cover no-repeat;
-  box-shadow:0 0 0 1px rgba(36,49,71,.6) inset;
-}
 h1{font-size:18px;margin:0}.subtitle{color:var(--muted);font-size:13px}
 .container{max-width:1100px;margin:22px auto;padding:0 18px}
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
